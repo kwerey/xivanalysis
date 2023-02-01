@@ -3,4 +3,5 @@ export enum DISPLAY_ORDER {
 	ZOE = 2,
 	SWIFTCAST = 3,
 	INTERRUPTS = 4,
+	KERACHOLE = 5,
 }

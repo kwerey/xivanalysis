@@ -3,6 +3,7 @@ import {CooldownDowntime} from './CooldownDowntime'
 import {DoTs} from './DoTs'
 import {Gauge} from './Gauge'
 import {Interrupts} from './Interrupts'
+import {Kerachole} from './Kerachole'
 import {Overheal} from './Overheal'
 import {Swiftcast} from './Swiftcast'
 import {Tincture} from './Tincture'
@@ -18,4 +19,5 @@ export default [
 	Swiftcast,
 	Tincture,
 	Zoe,
+	Kerachole,
 ]

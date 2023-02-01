@@ -57,7 +57,8 @@
     "ts-toolbelt": "^8.0.7",
     "tslib": "^2",
     "url-search-params-polyfill": "^8",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
