@@ -3,11 +3,15 @@ import {t, Trans} from '@lingui/macro'
 import {DataLink} from 'components/ui/DbLink'
 import {ActionKey} from 'data/ACTIONS'
 import {Status} from 'data/STATUSES'
+import {Event, Events} from 'event'
+import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
 import {BuffWindow, ExpectedGcdCountEvaluator} from 'parser/core/modules/ActionWindow'
+import {Actors} from 'parser/core/modules/Actors'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
+import {Actor, Team} from 'report'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
 // THIS ISN'T ACTUALLY DOING ANYTHING USEFUL ITS JUST A PLACEHOLDER
@@ -33,7 +37,25 @@ export class Kerachole extends BuffWindow {
 	override initialise() {
 		super.initialise()
 
-		this.trackOnlyActions(GCD_HEALS.map(key => this.data.actions[key].id))
+		const foeIds = this.parser.pull.actors
+			.filter(actor => actor.team === Team.FOE)
+			.map(actor => actor.id)
+
+		const actionFilter = filter<Event>()
+			.type('action') // this is redundant prolly
+			.source(oneOf(foeIds))
+
+		console.log(`foe ids are ${foeIds}`)
+		// get boss entity id??
+		// or just show incoming damage
+		this.setEventFilter((event): event is Events['action'] => {
+
+			if (!actionFilter(event)) { return false }
+
+			console.log(event)
+			return event.action
+
+		})
 
 		this.addEvaluator(new ExpectedGcdCountEvaluator({
 			expectedGcds: 1,
@@ -46,5 +68,7 @@ export class Kerachole extends BuffWindow {
 				2: SEVERITY.MAJOR,
 			},
 		}))
+
 	}
+
 }
