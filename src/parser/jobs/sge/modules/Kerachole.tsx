@@ -13,20 +13,9 @@ import React from 'react'
 import {Actor, Team, Pull} from 'report'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
-// THIS ISN'T ACTUALLY DOING ANYTHING USEFUL ITS JUST A PLACEHOLDER
-
-/** Zoe only affects healing spells, so we're only going to track those */
-const GCD_HEALS: ActionKey[] = [
-	'PNEUMA',
-	'DIAGNOSIS',
-	'EUKRASIAN_DIAGNOSIS',
-	'PROGNOSIS',
-	'EUKRASIAN_PROGNOSIS',
-]
-
 export class Kerachole extends BuffWindow {
 	static override handle = 'Kerachole'
-	static override title: MessageDescriptor = t('sge.kerachole.title')`Kerachole Efficiency`
+	static override title: MessageDescriptor = t('sge.kerachole.title')`Kerachole Uses`
 	static override displayOrder = DISPLAY_ORDER.KERACHOLE
 
 	@dependency private globalCooldown!: GlobalCooldown
