@@ -7,11 +7,10 @@ import {Event, Events} from 'event'
 import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
 import {BuffWindow, ExpectedGcdCountEvaluator} from 'parser/core/modules/ActionWindow'
-import {Actors} from 'parser/core/modules/Actors'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
-import {Actor, Team} from 'report'
+import {Actor, Team, Pull} from 'report'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
 // THIS ISN'T ACTUALLY DOING ANYTHING USEFUL ITS JUST A PLACEHOLDER
@@ -42,18 +41,23 @@ export class Kerachole extends BuffWindow {
 			.map(actor => actor.id)
 
 		const actionFilter = filter<Event>()
-			.type('action') // this is redundant prolly
+			.type('action') // do we want to capture actions, or instances of damage?
 			.source(oneOf(foeIds))
 
+		const getActorName = (actorId: Actor['id'], actors: Actor[]) =>
+			actors.find(actor => actor.id === actorId)?.name
+			?? actorId
+
 		console.log(`foe ids are ${foeIds}`)
-		// get boss entity id??
-		// or just show incoming damage
+
 		this.setEventFilter((event): event is Events['action'] => {
 
+			// Use the filter above to fetch only events by hostile actors
 			if (!actionFilter(event)) { return false }
 
+			console.log('captured action by: ' + getActorName(event.source, this.parser.pull.actors))
 			console.log(event)
-			return event.action
+			return event
 
 		})
 
