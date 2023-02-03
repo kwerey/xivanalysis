@@ -7,6 +7,7 @@ import {DRG} from './DRG'
 import {DRK} from './DRK'
 import {DUTY} from './DUTY'
 import {GNB} from './GNB'
+import {HOSTILE} from './HOSTILE'
 import {ITEM_ID_OFFSET, ITEMS} from './ITEMS'
 import {LIMIT_BREAK} from './LIMIT_BREAK'
 import {MCH} from './MCH'
@@ -57,6 +58,8 @@ export const root = {
 	...SMN,
 	...RDM,
 	...BLU,
+
+	...HOSTILE,
 }
 
 export type ActionRoot = typeof root

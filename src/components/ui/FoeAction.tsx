@@ -7,17 +7,21 @@ import React, {Component} from 'react'
 import overlayStyle from './Procs/ProcOverlay.module.css'
 import styles from './Rotation.module.css'
 
-export interface RotationEvent {
+/* Foe? Enemy? I'm using foe because we have FRIEND and FOE in the report */
+// copying the 'rotation' module fully
+// I think we'll need this to display autos and format stuff right when its not either on or off gcd.
+
+export interface FoeActionEvent {
 	cause?: Cause,
 	action?: number
 	isProc?: boolean
 }
-interface RotationProps {
-	events: RotationEvent[]
+interface FoeActionProps {
+	events: FoeActionEvent[]
 }
 
-export default class Rotation extends Component<RotationProps> {
-	getActionId(event: RotationEvent): number | undefined {
+export default class FoeAction extends Component<FoeActionProps> {
+	getActionId(event: FoeActionEvent): number | undefined {
 		if (event.action != null) {
 			return event.action
 		}
@@ -36,12 +40,10 @@ export default class Rotation extends Component<RotationProps> {
 
 				const action = getDataBy(ACTIONS, 'id', actionId) as TODO
 
-				console.log(`retrieved data about ${actionId}: ${JSON.stringify(action)}`)
-
 				// Don't bother showing the icon for autos
-				if (!action || action.autoAttack) {
-					return
-				}
+				// if (!action || action.autoAttack) {
+				// 	return
+				// }
 
 				// Stuff like the duty action doesn't have an icon mapping yet.
 				// TODO: Sort this out if it's a problem
@@ -52,12 +54,15 @@ export default class Rotation extends Component<RotationProps> {
 
 				const linkClassName = [
 					styles.link,
-					{[styles.ogcd]: !action.onGcd},
-					event.isProc ? overlayStyle.procOverlay : '',
+					// Not relevant, but maybe we'd wanna display boss autos above using the same style as oGCDs?
+					// {[styles.ogcd]: !action.onGcd},
+					// event.isProc ? overlayStyle.procOverlay : '',
 				]
 
-				const iconSize = action.onGcd ? styles.gcdSize : styles.ogcdSize
+				const iconSize = styles.gcdSize // just use the gcd styling for now.
+				// const iconSize = action.onGcd ? styles.gcdSize : styles.ogcdSize
 
+				// can probably comment the next two lines out?
 				const isItem = action.id >= ITEM_ID_OFFSET
 
 				const Link = isItem ? ItemLink : ActionLink

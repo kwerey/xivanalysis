@@ -6,7 +6,7 @@ import {Status} from 'data/STATUSES'
 import {Event, Events} from 'event'
 import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
-import {BuffWindow, ExpectedGcdCountEvaluator} from 'parser/core/modules/ActionWindow'
+import {BuffWindow, MitigationEvaluator} from 'parser/core/modules/ActionWindow'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
@@ -50,10 +50,10 @@ export class Kerachole extends BuffWindow {
 
 		})
 
-		this.addEvaluator(new ExpectedGcdCountEvaluator({
-			expectedGcds: 1,
-			globalCooldown: this.globalCooldown,
-			suggestionIcon: this.data.actions.ZOE.icon,
+		this.addEvaluator(new MitigationEvaluator({
+			expectedGcds: 1, // change this
+			globalCooldown: this.globalCooldown, // probably drop this
+			suggestionIcon: this.data.actions.KERACHOLE.icon,
 			suggestionContent: <Trans id="sge.kerachole.missed.suggestion.content"><DataLink action="KERACHOLE"/> mitigates incoming damage. try to use it in anticipation of significant damage spikes.</Trans>,
 			suggestionWindowName: <DataLink action="KERACHOLE" showIcon={false} />,
 			severityTiers: {

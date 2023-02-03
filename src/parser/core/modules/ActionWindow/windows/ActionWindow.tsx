@@ -165,6 +165,7 @@ export abstract class ActionWindow extends Analyser {
 
 		const rotationTargets = evalColumns.filter(column => column.format === 'table').map(column => column.header)
 		const notesData = evalColumns.filter(column => column.format === 'notes').map(column => column.header)
+
 		const rotationData = this.history.entries
 			.map((window, idx) => {
 				const targetsData: RotationTableTargetData = {}
@@ -178,6 +179,17 @@ export abstract class ActionWindow extends Analyser {
 						notesMap[colName] = column.rows[idx]
 					}
 				})
+				// can delete this soon but will leave it so its quick to check if display layer works
+				// console.log('window action data is:')
+				// console.log(JSON.stringify(window.data))
+				// console.log(window.data.map(event => { return {action: event.action} }))
+
+				// 	registerEventFormatter('action', ({event, pull}) => <>
+				// 	{getActorName(event.source, pull.actors)}
+				// 	&nbsp;uses <ActionLink id={event.action}/>
+				// 	&nbsp;on {getActorName(event.target, pull.actors)}
+				// </>)
+
 				return {
 					start: window.start - this.parser.pull.timestamp,
 					end: (window.end ?? window.start) - this.parser.pull.timestamp,
@@ -187,11 +199,18 @@ export abstract class ActionWindow extends Analyser {
 				}
 			})
 
+		console.log(`rotationData is: ${JSON.stringify(rotationData)}`)
+
+		//		console.log('valid rotationData would look like: "data={[{\'start\': 20944, \'end\': 22102, \'targetsData\': {\'missedgcd\': {\'actual\': 1, \'expected\': 1}}, \'rotation\': [{\'action\': 25837}], \'notesMap\': {}}, {\'start\': 141505, \'end\': 143281, \'targetsData\': {\'missedgcd\': {\'actual\': 1, \'expected\': 1}}, \'rotation\': [{\'action\': 25837}], \'notesMap\': {}}, {\'start\': 290095, \'end\': 291776, \'targetsData\': {\'missedgcd\': {\'actual\': 1, \'expected\': 1}}, \'rotation\': [{\'action\': 25837}], \'notesMap\': {}}, {\'start\': 357644, \'end\': 358309, \'targetsData\': {\'missedgcd\': {\'actual\': 1, \'expected\': 1}}, \'rotation\': [{\'action\': 173}], \'notesMap\': {}}, {\'start\': 425372, \'end\': 426056, \'targetsData\': {\'missedgcd\': {\'actual\': 1, \'expected\': 1}}, \'rotation\': [{\'action\': 25837}], \'notesMap\': {}}]}"')
+
 		return <>
 			{this.prependMessages}
 			<RotationTable
 				targets={rotationTargets}
 				data={rotationData}
+				//[{'start': 20944, 'end': 22102, 'targetsData': {'missedgcd': {'actual': 1, 'expected': 1}}, 'rotation': [{'action': 25837}], 'notesMap': {}}, {'start': 141505, 'end': 143281, 'targetsData': {'missedgcd': {'actual': 1, 'expected': 1}}, 'rotation': [{'action': 25837}], 'notesMap': {}}, {'start': 290095, 'end': 291776, 'targetsData': {'missedgcd': {'actual': 1, 'expected': 1}}, 'rotation': [{'action': 25837}], 'notesMap': {}}, {'start': 357644, 'end': 358309, 'targetsData': {'missedgcd': {'actual': 1, 'expected': 1}}, 'rotation': [{'action': 173}], 'notesMap': {}}, {'start': 425372, 'end': 426056, 'targetsData': {'missedgcd': {'actual': 1, 'expected': 1}}, 'rotation': [{'action': 25837}], 'notesMap': {}}]
+				// my existing data structure seems OK if i put an action we have a lookup for into it - slipstream, '25837'. so what's missing here is action-> display UI stuff.
+				// data={[{'start': 14836, 'end': 29803, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 25837}, {'action': 25837}, {'action': 27978}, {'action': 26674}, {'action': 27978}], 'notesMap': {}}, {'start': 74363, 'end': 89321, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26651}, {'action': 26650}, {'action': 26652}, {'action': 26653}], 'notesMap': {}}, {'start': 122029, 'end': 137005, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 27978}, {'action': 27978}, {'action': 26678}, {'action': 26663}, {'action': 27978}], 'notesMap': {}}, {'start': 155715, 'end': 170686, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 27978}, {'action': 26664}, {'action': 26665}, {'action': 26665}, {'action': 27978}, {'action': 27978}, {'action': 27978}], 'notesMap': {}}, {'start': 210918, 'end': 225945, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26675}, {'action': 27978}, {'action': 27978}, {'action': 27978}, {'action': 26678}], 'notesMap': {}}, {'start': 260758, 'end': 275731, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26661}, {'action': 26660}, {'action': 26661}, {'action': 26660}, {'action': 26662}, {'action': 26660}, {'action': 26669}, {'action': 26678}, {'action': 27978}, {'action': 27978}], 'notesMap': {}}, {'start': 295248, 'end': 310222, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26678}, {'action': 28098}], 'notesMap': {}}, {'start': 338740, 'end': 353714, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26648}, {'action': 26646}, {'action': 27978}, {'action': 27978}], 'notesMap': {}}, {'start': 389378, 'end': 404344, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 27978}, {'action': 27978}, {'action': 26668}], 'notesMap': {}}, {'start': 427293, 'end': 442269, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26680}, {'action': 26680}, {'action': 26680}, {'action': 26680}, {'action': 26680}, {'action': 26680}, {'action': 26680}, {'action': 26651}, {'action': 26650}, {'action': 26652}], 'notesMap': {}}, {'start': 461072, 'end': 476037, 'targetsData': {'missedgcd': {'actual': 0, 'expected': 1}}, 'rotation': [{'action': 26675}, {'action': 27978}, {'action': 27978}, {'action': 27978}, {'action': 27978}, {'action': 26678}], 'notesMap': {}}]}
 				notes={notesData}
 				onGoto={this.timeline.show}
 				headerTitle={this.rotationTableHeader}
