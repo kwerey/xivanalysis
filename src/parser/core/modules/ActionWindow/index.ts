@@ -15,6 +15,8 @@ export type {EvaluationOutput, WindowEvaluator} from './evaluators/WindowEvaluat
 
 export {ActionWindow} from './windows/ActionWindow'
 export {BuffWindow} from './windows/BuffWindow'
+export {FoeActionWindow} from './windows/FoeActionWindow'
+export {MitigationWindow} from './windows/MitigationWindow'
 export {RaidBuffWindow} from './windows/RaidBuffWindow'
 export {RestartWindow} from './windows/RestartWindow'
 export {TimedWindow} from './windows/TimedWindow'

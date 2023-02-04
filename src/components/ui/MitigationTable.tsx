@@ -2,20 +2,13 @@ import {Trans} from '@lingui/react'
 import FoeAction, {FoeActionEvent} from 'components/ui/FoeAction'
 import React from 'react'
 import {Button, Table} from 'semantic-ui-react'
-import {isDefined, formatDuration} from 'utilities'
+import {formatDuration} from 'utilities'
 
-// RENAME ALL THE STUFF IN HERE PROPERLY LIKE A SENSIBLE PERSON WOULD
-
-export interface MitigationTarget {
+export interface MitigationTableNotesMap {
 	/**
-	 * Displayed header
+	 * Identifier to Notes mapping
 	 */
-	header: React.ReactNode
-	/**
-	 * Accessor can either be a string, in which case this will resolve to the value assigned to the same key in the `targetsData` field in each entry,
-	 * or a function resolving the entry to the `MitigationTargetData`.
-	 */
-	accessor: string | ((entry: MitigationTableEntry) => MitigationTargetData)
+	[id: string]: React.ReactNode
 }
 
 export interface MitigationNotes {
@@ -30,40 +23,6 @@ export interface MitigationNotes {
 	accessor: string | ((entry: MitigationTableEntry) => React.ReactNode)
 }
 
-/**
- * Determines how a rotation target gets highlighted (negative = red, positive = green)
- */
-export enum MitigationTargetOutcome { NEGATIVE, NEUTRAL, POSITIVE }
-
-export interface MitigationTargetData {
-	/**
-	 * Expected target number
-	 */
-	expected?: number
-	/**
-	 * Recorded number
-	 */
-	actual: number
-	/**
-	 * Optional function to override the default positive/negative highlighting
-	 */
-	targetComparator?: (actual: number, expected?: number) => MitigationTargetOutcome
-}
-
-export interface MitigationTableTargetData {
-	/**
-	 * Identifier to Target Data mapping
-	 */
-	[id: string]: MitigationTargetData
-}
-
-export interface MitigationTableNotesMap {
-	/**
-	 * Identifier to Notes mapping
-	 */
-	[id: string]: React.ReactNode
-}
-
 export interface MitigationTableEntry {
 	/**
 	 * Start point relative to fight start
@@ -76,22 +35,15 @@ export interface MitigationTableEntry {
 	/**
 	 * Map of pre calculated target data
 	 */
-	targetsData?: MitigationTableTargetData
-	/**
-	 * Map of pre calculated target data
-	 */
 	notesMap?: MitigationTableNotesMap
 	/**
 	 * Enemy action to display that occurs during this entry
 	 */
-	foeaction: FoeActionEvent[]
+	rotation: FoeActionEvent[]
 }
 
 interface MitigationTableProps {
-	/**
-	 * List of Targets to display, consisting of the displayed header and the accessor to resolve the actual and expected values
-	 */
-	targets?: MitigationTarget[]
+
 	/**
 	 * List of Notes to display, consisting of the displayed header and the accessor to resolve the value
 	 */
@@ -117,10 +69,6 @@ interface MitigationTableProps {
 
 interface MitigationTableRowProps {
 	/**
-	 * List of Targets to display, consisting of the displayed header and the accessor to resolve the actual and expected values
-	 */
-	targets: MitigationTarget[]
-	/**
 	 * List of Notes to display, consisting of the displayed header and the accessor to resolve the value
 	 */
 	notes: MitigationNotes[]
@@ -135,32 +83,6 @@ interface MitigationTableRowProps {
 }
 
 export class MitigationTable extends React.Component<MitigationTableProps> {
-	static defaultTargetComparator(actual: number, expected?: number): MitigationTargetOutcome {
-		if (!isDefined(expected)) {
-			return MitigationTargetOutcome.NEUTRAL
-		}
-
-		if (actual >= expected) {
-			return MitigationTargetOutcome.POSITIVE
-		}
-
-		return MitigationTargetOutcome.NEGATIVE
-	}
-
-	static targetAccessorResolver = (entry: MitigationTableEntry, target: MitigationTarget): MitigationTargetData => {
-		if (typeof target.accessor === 'string' && entry.targetsData != null) {
-			return entry.targetsData[target.accessor]
-		}
-
-		if (typeof target.accessor === 'function') {
-			return target.accessor(entry)
-		}
-
-		return {
-			actual: 0,
-			expected: 0,
-		}
-	}
 
 	static notesAccessorResolver = (entry: MitigationTableEntry, note: MitigationNotes): React.ReactNode => {
 		if (typeof note.accessor === 'string' && entry.notesMap != null) {
@@ -174,22 +96,7 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 		return null
 	}
 
-	static TargetCell = ({actual, expected, targetComparator}: MitigationTargetData) => {
-		if (targetComparator === undefined) {
-			targetComparator = MitigationTable.defaultTargetComparator
-		}
-		const targetOutcome = targetComparator(actual, expected)
-
-		return <Table.Cell
-			textAlign="center"
-			positive={targetOutcome === MitigationTargetOutcome.POSITIVE}
-			negative={targetOutcome === MitigationTargetOutcome.NEGATIVE}
-		>
-			{actual}/{expected === undefined ? '-' : expected}
-		</Table.Cell>
-	}
-
-	static Row = ({onGoto, targets, notes, notesMap, start, end, targetsData, foeaction}: MitigationTableRowProps & MitigationTableEntry) =>
+	static Row = ({onGoto, notes, notesMap, start, end, rotation}: MitigationTableRowProps & MitigationTableEntry) =>
 		<Table.Row>
 			<Table.Cell textAlign="center">
 				<span style={{marginRight: 5}}>{formatDuration(start, {secondPrecision: 0})}</span>
@@ -201,17 +108,12 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 					onClick={() => onGoto(start, end)}
 				/>}
 			</Table.Cell>
-			{
-				targets
-					.map(target => MitigationTable.targetAccessorResolver({start, end, targetsData, foeaction}, target))
-					.map((targetEntry, i) => <MitigationTable.TargetCell key={`target_${i}`} {...targetEntry}/>)
-			}
 			<Table.Cell>
-				<FoeAction events={foeaction}/>
+				<FoeAction events={rotation}/>
 			</Table.Cell>
 			{
 				notes
-					.map(note => MitigationTable.notesAccessorResolver({start, end, targetsData, notesMap, foeaction}, note))
+					.map(note => MitigationTable.notesAccessorResolver({start, end, notesMap, rotation}, note))
 					.map((noteEntry, i) =>
 						<Table.Cell
 							key={`notes_${i}`}
@@ -225,7 +127,6 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 
 	override render(): React.ReactNode {
 		const {
-			targets,
 			notes,
 			data,
 			onGoto,
@@ -238,13 +139,6 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 					<Table.HeaderCell collapsing>
 						<strong><Trans id="core.ui.rotation-table.header.time">Time</Trans></strong>
 					</Table.HeaderCell>
-					{
-						(targets || []).map((target, i) =>
-							<Table.HeaderCell key={`target_header_${i}`} textAlign="center" collapsing>
-								<strong>{target.header}</strong>
-							</Table.HeaderCell>,
-						)
-					}
 					<Table.HeaderCell>
 						<strong>{(headerTitle)? headerTitle : <Trans id="core.ui.rotation-table.header.rotation">Attacks Mitigated</Trans>}</strong>
 					</Table.HeaderCell>
@@ -260,7 +154,7 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 			<Table.Body>
 				{
 					data.map((entry) =>
-						<MitigationTable.Row key={entry.start} onGoto={onGoto} targets={targets || []} notes={notes || []} {...entry}/>,
+						<MitigationTable.Row key={entry.start} onGoto={onGoto} notes={notes || []} {...entry}/>,
 					)
 				}
 			</Table.Body>

@@ -6,14 +6,14 @@ import {Status} from 'data/STATUSES'
 import {Event, Events} from 'event'
 import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
-import {BuffWindow, MitigationEvaluator} from 'parser/core/modules/ActionWindow'
+import {MitigationWindow, MitigationEvaluator} from 'parser/core/modules/ActionWindow'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
 import {Actor, Team, Pull} from 'report'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
-export class Kerachole extends BuffWindow {
+export class Kerachole extends MitigationWindow {
 	static override handle = 'Kerachole'
 	static override title: MessageDescriptor = t('sge.kerachole.title')`Kerachole Uses`
 	static override displayOrder = DISPLAY_ORDER.KERACHOLE
@@ -50,6 +50,7 @@ export class Kerachole extends BuffWindow {
 
 		})
 
+		// Change this its all wrong now.
 		this.addEvaluator(new MitigationEvaluator({
 			expectedGcds: 1, // change this
 			globalCooldown: this.globalCooldown, // probably drop this
