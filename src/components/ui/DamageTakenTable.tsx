@@ -1,18 +1,17 @@
 import {Trans} from '@lingui/react'
 import FoeDamage, {FoeDamageEvent} from 'components/ui/FoeDamage'
-// import foeaction, {foeactionEvent} from 'components/ui/foeaction'
 import React from 'react'
 import {Button, Table} from 'semantic-ui-react'
 import {formatDuration} from 'utilities'
 
-export interface MitigationTableNotesMap {
+export interface DamageTakenTableNotesMap {
 	/**
 	 * Identifier to Notes mapping
 	 */
 	[id: string]: React.ReactNode
 }
 
-export interface MitigationNotes {
+export interface DamageTakenNotes {
 	/**
 	 * Displayed header
 	 */
@@ -21,10 +20,10 @@ export interface MitigationNotes {
 	 * Accessor can either be a string, in which case this will resolve to the value assigned to the same key in the `targetsData` field in each entry,
 	 * or a function resolving the entry to the `MitigationTargetData`.
 	 */
-	accessor: string | ((entry: MitigationTableEntry) => React.ReactNode)
+	accessor: string | ((entry: DamageTakenTableEntry) => React.ReactNode)
 }
 
-export interface MitigationTableEntry {
+export interface DamageTakenTableEntry {
 	/**
 	 * Start point relative to fight start
 	 */
@@ -36,24 +35,28 @@ export interface MitigationTableEntry {
 	/**
 	 * Map of pre calculated target data
 	 */
-	notesMap?: MitigationTableNotesMap
+	notesMap?: DamageTakenTableNotesMap
 	/**
 	 * Enemy action to display that occurs during this entry
 	 */
-	rotation: foeDamageEvent[]
+	damageEvents: foeDamageEvent[]
+	// /**
+	//  * * Total damage dealt during this entry
+	// */
+   	// totalDamageTaken: number
 
 }
 
-interface MitigationTableProps {
+interface DamageTakenTableProps {
 
 	/**
 	 * List of Notes to display, consisting of the displayed header and the accessor to resolve the value
 	 */
-	notes?: MitigationNotes[]
+	notes?: DamageTakenNotes[]
 	/**
 	 * List of table entries, consisting of a time frame and the actions mitigated, with optionally a pre calculated target data
 	 */
-	data: MitigationTableEntry[]
+	data: DamageTakenTableEntry[]
 	/**
 	 * Optional Callback to display the jump to time button.
 	 * Usually this should be a pass through of the `Timeline.show` function.
@@ -69,11 +72,11 @@ interface MitigationTableProps {
 	headerTitle?: JSX.Element
 }
 
-interface MitigationTableRowProps {
+interface DamageTakenTableProps {
 	/**
 	 * List of Notes to display, consisting of the displayed header and the accessor to resolve the value
 	 */
-	notes: MitigationNotes[]
+	notes: DamageTakenNotes[]
 	/**
 	 * Optional Callback to display the jump to time button.
 	 * Usually this should be a pass through of the `Timeline.show` function.
@@ -84,9 +87,9 @@ interface MitigationTableRowProps {
 	onGoto?: (start: number, end: number, scrollTo?: boolean) => void
 }
 
-export class MitigationTable extends React.Component<MitigationTableProps> {
+export class DamageTakenTable extends React.Component<DamageTakenTableProps> {
 
-	static notesAccessorResolver = (entry: MitigationTableEntry, note: MitigationNotes): React.ReactNode => {
+	static notesAccessorResolver = (entry: DamageTakenTableEntry, note: DamageTakenTableNotes): React.ReactNode => {
 		if (typeof note.accessor === 'string' && entry.notesMap != null) {
 			return entry.notesMap[note.accessor]
 		}
@@ -98,7 +101,7 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 		return null
 	}
 
-	static Row = ({onGoto, notes, notesMap, start, end, rotation}: MitigationTableRowProps & MitigationTableEntry) =>
+	static Row = ({onGoto, notes, notesMap, start, end, damageEvents}: DamageTakenTableRowProps & DamageTakenTableEntry) =>
 		<Table.Row>
 			<Table.Cell textAlign="center">
 				<span style={{marginRight: 5}}>{formatDuration(start, {secondPrecision: 0})}</span>
@@ -111,11 +114,11 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 				/>}
 			</Table.Cell>
 			<Table.Cell>
-				<FoeDamage events={rotation}/>
+				<FoeDamage events={damageEvents}/>
 			</Table.Cell>
 			{
 				notes
-					.map(note => MitigationTable.notesAccessorResolver({start, end, notesMap, rotation}, note))
+					.map(note => DamageTakenTable.notesAccessorResolver({start, end, notesMap, damageEvents}, note))
 					.map((noteEntry, i) =>
 						<Table.Cell
 							key={`notes_${i}`}
@@ -139,10 +142,10 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 			<Table.Header>
 				<Table.Row>
 					<Table.HeaderCell collapsing>
-						<strong><Trans id="core.ui.rotation-table.header.time">Time</Trans></strong>
+						<strong><Trans id="core.ui.damage-taken-table.header.time">Time</Trans></strong>
 					</Table.HeaderCell>
 					<Table.HeaderCell>
-						<strong>{(headerTitle)? headerTitle : <Trans id="core.ui.rotation-table.header.rotation">Attacks Mitigated</Trans>}</strong>
+						<strong>{(headerTitle)? headerTitle : <Trans id="core.ui.damage-taken-table.header.damage-taken">Damage Taken</Trans>}</strong>
 					</Table.HeaderCell>
 					{
 						(notes || []).map((note, i) =>
@@ -156,7 +159,7 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 			<Table.Body>
 				{
 					data.map((entry) =>
-						<MitigationTable.Row key={entry.start} onGoto={onGoto} notes={notes || []} {...entry}/>,
+						<DamageTakenTable.Row key={entry.start} onGoto={onGoto} notes={notes || []} {...entry}/>,
 					)
 				}
 			</Table.Body>

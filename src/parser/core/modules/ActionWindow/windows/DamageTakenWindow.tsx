@@ -1,4 +1,4 @@
-import {MitigationTable, MitigationTableNotesMap} from 'components/ui/MitigationTable'
+import {DamageTakenTable, DamageTakenTableNotesMap} from 'components/ui/DamageTakenTable'
 import {Event, Events} from 'event'
 import {dependency} from 'parser/core/Injectable'
 import {Timeline} from 'parser/core/modules/Timeline'
@@ -169,31 +169,30 @@ export abstract class DamageTakenWindow extends Analyser {
 
 		const notesData = evalColumns.filter(column => column.format === 'notes').map(column => column.header)
 
-		const foeActionData = this.history.entries
-			.map((window, idx) => {
-				const notesMap: MitigationTableNotesMap = {}
-				evalColumns.forEach(column => {
-					if (typeof column.header.accessor !== 'string') { return }
-					const colName = column.header.accessor
-					notesMap[colName] = column.rows[idx]
-				})
-
-				console.log(JSON.stringify(window.data))
-
-				return {
-					start: window.start - this.parser.pull.timestamp,
-					end: (window.end ?? window.start) - this.parser.pull.timestamp,
-					// these should be in the evaluator
-					// targets: window.data.map(targets => { return {event: event.targets.length} }),
-					// totalDamage: window.data.map(totalDamage => { return {event: getDamageTotal(event)} }), // ??
-					rotation: window.data.map(event => { return {event: event} }),
-					notesMap,
-				}
+		const foeActionData = this.history.entries.map((window, idx) => {
+			const notesMap: DamageTakenTableNotesMap = {}
+			evalColumns.forEach(column => {
+				if (typeof column.header.accessor !== 'string') { return }
+				const colName = column.header.accessor
+				notesMap[colName] = column.rows[idx]
 			})
+
+			console.log(JSON.stringify(window.data))
+
+			return {
+				start: window.start - this.parser.pull.timestamp,
+				end: (window.end ?? window.start) - this.parser.pull.timestamp,
+				// these should be in the evaluator
+				// targets: window.data.map(targets => { return {event: event.targets.length} }),
+				// totalDamage: window.data.map(totalDamage => { return {event: getDamageTotal(event)} }), // ??
+				damageEvents: window.data.map(event => { return {event: event} }),
+				notesMap,
+			}
+		})
 
 		return <>
 			{this.prependMessages}
-			<MitigationTable
+			<DamageTakenTable
 				data={foeActionData}
 				notes={notesData}
 				onGoto={this.timeline.show}

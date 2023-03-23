@@ -1,5 +1,5 @@
 import {Plural, Trans} from '@lingui/react' // we probably do want plurals some day?
-import {MitigationTarget, MitigationTargetData} from 'components/ui/MitigationTable'
+import {MitigationTarget, MitigationTargetData} from 'components/ui/DamageTakenTable'
 import React from 'react'
 import {SeverityTiers, TieredSuggestion} from '../../Suggestions/Suggestion'
 import {EvaluatedAction} from '../EvaluatedAction'

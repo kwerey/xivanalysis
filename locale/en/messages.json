@@ -329,6 +329,8 @@
   "core.ui.positionals-table.header.misses": "Misses",
   "core.ui.rotation-table.header.rotation": "Rotation",
   "core.ui.rotation-table.header.time": "Time",
+	"core.ui.damage-taken-table.header.damage-taken": "Damage Taken",
+	"core.ui.damage-taken-table.header.time": "Time",
   "core.unable-to-act.no-valid-window": "Actor {0} has no valid window to end.",
   "core.weaving.between-gcds": "between GCDs",
   "core.weaving.content": "Avoid weaving more actions than you have time for in a single GCD window. Doing so will delay your next GCD, reducing possible uptime. Check the {0} module below for more detailed analysis.",

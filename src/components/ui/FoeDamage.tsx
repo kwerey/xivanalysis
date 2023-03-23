@@ -23,7 +23,7 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 	/**
 	 *
 	 * @param damageEvent
-	 * @returns total damage taken by all targets by an instance of damage
+	 * @returns integer representing total damage taken by all targets by an instance of damage
 	 */
 	private getDamageTotal(damageEvent: FoeDamageEvent): number | undefined {
 		let damageTotal = 0
@@ -38,12 +38,12 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 
 	private getActionId(event: FoeDamageEvent): number | undefined {
 		event = event.event
-		console.log(`trying to get action id, the event in question is ${JSON.stringify(event)}`)
+		// console.log(`trying to get action id, the event in question is ${JSON.stringify(event)}`)
 		if (event.action != null) {
 			return event.action
 		}
 		if (event.cause != null && event.cause.type === 'action') {
-			console.log(`trying to get action id, the event cause is ${event.cause.action}`)
+			// console.log(`trying to get action id, the event cause is ${event.cause.action}`)
 			return event.cause.action
 		}
 		return undefined
@@ -53,13 +53,10 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 
 		const {events} = this.props
 
-		console.log('the events object contains:')
-		console.log(events)
-
 		return <div className={styles.container}>
 			{events.map((event, index) => {
 
-				console.log(`damage instance we are trying to look up: ${JSON.stringify(event)}`)
+				// console.log(`damage instance we are trying to look up: ${JSON.stringify(event)}`)
 
 				const actionId = this.getActionId(event)
 
@@ -77,6 +74,9 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 				const iconSize = styles.gcdSize // just use the gcd styling for now.
 				// const iconSize = action.onGcd ? styles.gcdSize : styles.ogcdSize
 
+				// some actionids stay as 'loading' indefinitely
+				// eg 500000 which looks like its proto-carbuncles auto attack
+				// can we filter them out or hide the 'loading' text?
 				return <div
 					key={index}
 					className={cn(...linkClassName)}
