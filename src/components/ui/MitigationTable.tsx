@@ -1,5 +1,6 @@
 import {Trans} from '@lingui/react'
-import FoeAction, {FoeActionEvent} from 'components/ui/FoeAction'
+import FoeDamage, {FoeDamageEvent} from 'components/ui/FoeDamage'
+// import foeaction, {foeactionEvent} from 'components/ui/foeaction'
 import React from 'react'
 import {Button, Table} from 'semantic-ui-react'
 import {formatDuration} from 'utilities'
@@ -39,7 +40,8 @@ export interface MitigationTableEntry {
 	/**
 	 * Enemy action to display that occurs during this entry
 	 */
-	rotation: FoeActionEvent[]
+	rotation: foeDamageEvent[]
+
 }
 
 interface MitigationTableProps {
@@ -109,7 +111,7 @@ export class MitigationTable extends React.Component<MitigationTableProps> {
 				/>}
 			</Table.Cell>
 			<Table.Cell>
-				<FoeAction events={rotation}/>
+				<FoeDamage events={rotation}/>
 			</Table.Cell>
 			{
 				notes

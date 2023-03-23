@@ -14,14 +14,12 @@ import {EvaluationOutput, WindowEvaluator} from '../evaluators/WindowEvaluator'
 import {History, HistoryEntry} from '../History'
 
 /**
- * Tracks enemy actions that occur within a window.
+ * Tracks instances of damage that occur within a window.
  * Hacks together buffwindow + actionwindow
- * We need a new window base class to do this so we can display any action by looking it up from XIVAPI.
- * ActionWindow just refers to the ones available in-repo as data
- * (Also bc we don't have gcds and ogcds for enemies.)
- * We could mod use ActionWindow without adding a bunch of logic to display either friendly or hostile actions but that seems messy
- */
-export abstract class FoeActionWindow extends Analyser {
+ * I think we need a new window base class to do this so we can display action names by looking them up from XIVAPI.
+ * ActionWindow just refers to the ones available in-repo as data, and we don't have those for bosses.
+*/
+export abstract class DamageTakenWindow extends Analyser {
 
 	@dependency protected data!: Data
 	@dependency private suggestions!: Suggestions
@@ -30,24 +28,23 @@ export abstract class FoeActionWindow extends Analyser {
 	/**
 	 * The captured windows.
 	 */
-	protected history = new History<Array<Events['action']>>(() => [])
+	protected history = new History<Array<Events['damage']>>(() => [])
 	/**
 	 * The event filter used to capture events while a window is open.
 	 * The default filter will capture all actions.
-	 * We might want to extend this to capture instances of damage at some point?
-	 * But that seems hard and people can refer to fflogs for details
 	 */
-	private eventFilter: EventFilterPredicate<Events['action']> = filter<Event>().source(this.parser.actor.id).type('action')
+	private eventFilter: EventFilterPredicate<Events['damage']> = filter<Event>().source(this.parser.actor.id).type('damage')
 	/**
 	 * The event hook for actions being captured.
 	 */
-	private eventHook?: EventHook<Events['action']>
+	private eventHook?: EventHook<Events['damage']>
 	/**
 	 * The evaluators used to generate suggestions and output for the windows.
 	 */
 	private evaluators: WindowEvaluator[] = []
 
 	/**
+	 * TODO: update this
 	 * Implementing modules MAY provide a value to override the "Rotation" title in the header of the rotation section
 	 * If implementing, you MUST provide a JSX.Element <Trans> or <Fragment> tag (Trans tag preferred)
 	 */
@@ -97,7 +94,7 @@ export abstract class FoeActionWindow extends Analyser {
 	 * If no window is open, the event is ignored.
 	 * @param event The event to be added to the window.
 	 */
-	protected onWindowAction(event: Events['action']) {
+	protected onWindowAction(event: Events['damage']) {
 		this.history.doIfOpen(current => current.push(event))
 	}
 
@@ -113,7 +110,7 @@ export abstract class FoeActionWindow extends Analyser {
 		this.eventFilter = filter<Event>()
 			.source(this.parser.actor.id)
 			.action(noneOf(actionsToIgnore))
-			.type('action')
+			.type('damage')
 	}
 	/**
 	 * Adjusts the event filter to only track certain actions.
@@ -127,15 +124,15 @@ export abstract class FoeActionWindow extends Analyser {
 		this.eventFilter = filter<Event>()
 			.source(this.parser.actor.id)
 			.action(oneOf(actionsToTrack))
-			.type('action')
+			.type('damage')
 	}
 
 	/**
-	 * Sets a custom event filter for the actions to capture during
+	 * Sets a custom event filter for the damage events to capture during
 	 * a window.
-	 * @param filter The filter for actions to capture during a window
+	 * @param filter The filter for damage events to capture during a window
 	 */
-	protected setEventFilter(filter: EventFilterPredicate<Events['action']>) {
+	protected setEventFilter(filter: EventFilterPredicate<Events['damage']>) {
 		this.eventFilter = filter
 	}
 
@@ -147,6 +144,7 @@ export abstract class FoeActionWindow extends Analyser {
 		this.onWindowEnd(this.parser.pull.timestamp + this.parser.pull.duration)
 
 		const actionHistory = this.mapHistoryActions()
+
 		this.evaluators
 			.forEach(ev => {
 				const suggestion = ev.suggest(actionHistory)
@@ -180,15 +178,18 @@ export abstract class FoeActionWindow extends Analyser {
 					notesMap[colName] = column.rows[idx]
 				})
 
+				console.log(JSON.stringify(window.data))
+
 				return {
 					start: window.start - this.parser.pull.timestamp,
 					end: (window.end ?? window.start) - this.parser.pull.timestamp,
-					rotation: window.data.map(event => { return {action: event.action} }),
+					// these should be in the evaluator
+					// targets: window.data.map(targets => { return {event: event.targets.length} }),
+					// totalDamage: window.data.map(totalDamage => { return {event: getDamageTotal(event)} }), // ??
+					rotation: window.data.map(event => { return {event: event} }),
 					notesMap,
 				}
 			})
-
-		console.log(`foeActionData is: ${JSON.stringify(foeActionData)}`)
 
 		return <>
 			{this.prependMessages}
@@ -207,7 +208,8 @@ export abstract class FoeActionWindow extends Analyser {
 				end: entry.end,
 				data: entry.data
 					.map(ev => {
-						const action = this.data.getAction(ev.action)
+						const action = this.data.getAction(ev)
+						console.log(`this action is ${action}`)
 						if (action == null) { return undefined }
 						return {...ev, action}
 					})

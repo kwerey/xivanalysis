@@ -30,7 +30,7 @@ export class Kerachole extends MitigationWindow {
 			.map(actor => actor.id)
 
 		const actionFilter = filter<Event>()
-			.type('action') // do we want to capture actions, or instances of damage?
+			.type('damage') // capture instances of damage to get total damage dealt
 			.source(oneOf(foeIds))
 
 		const getActorName = (actorId: Actor['id'], actors: Actor[]) =>
@@ -39,13 +39,11 @@ export class Kerachole extends MitigationWindow {
 
 		console.log(`foe ids are ${foeIds}`)
 
-		this.setEventFilter((event): event is Events['action'] => {
+		this.setEventFilter((event): event is Events['damage'] => {
 
 			// Use the filter above to fetch only events by hostile actors
 			if (!actionFilter(event)) { return false }
 
-			console.log('captured action by: ' + getActorName(event.source, this.parser.pull.actors))
-			console.log(event)
 			return event
 
 		})

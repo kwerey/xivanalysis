@@ -41,7 +41,7 @@ export default class FoeAction extends Component<FoeActionProps> {
 
 				const actionId = this.getActionId(event)
 
-				console.log('actionId for this event is: {actionId}')
+				console.log(`actionId for this event is: ${actionId}`)
 
 				const linkClassName = [
 					styles.link,
@@ -57,7 +57,7 @@ export default class FoeAction extends Component<FoeActionProps> {
 					key={index}
 					className={cn(...linkClassName)}
 				>
-					<ActionLink id={event.action}/>
+					<ActionLink id={event.action} showIcon={false} />
 				</div>
 			})}
 		</div>

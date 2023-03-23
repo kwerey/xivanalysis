@@ -6,7 +6,7 @@ import {ensureArray} from 'utilities'
 import {filter, oneOf} from '../../../filter'
 import {EvaluatedAction} from '../EvaluatedAction'
 import {HistoryEntry} from '../History'
-import {FoeActionWindow} from './FoeActionWindow'
+import {DamageTakenWindow} from './DamageTakenWindow'
 
 const SECONDS_TO_MS: number = 1000
 
@@ -17,9 +17,10 @@ const STATUS_DURATION_FUDGE = SECONDS_TO_MS
 
 /**
  * Tracks actions that occur while a mitigation status is active on the player or an enemy.
- * The only difference to buffwindow is that we extend the FoeActionWindow base class instead.
+ * The only difference to buffwindow is that we extend the DamageTakenWindow base class instead.
  */
-export abstract class MitigationWindow extends FoeActionWindow {
+
+export abstract class MitigationWindow extends DamageTakenWindow {
 
 	/**
 	 * The status that the buff window tracks.
