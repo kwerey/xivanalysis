@@ -185,7 +185,7 @@ export abstract class DamageTakenWindow extends Analyser {
 				// these should be in the evaluator
 				// targets: window.data.map(targets => { return {event: event.targets.length} }),
 				// totalDamage: window.data.map(totalDamage => { return {event: getDamageTotal(event)} }), // ??
-				damageEvents: window.data.map(event => { return {event: event} }),
+				damageEvents: window.data,
 				notesMap,
 			}
 		})

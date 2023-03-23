@@ -27,17 +27,16 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 	 */
 	private getDamageTotal(damageEvent: FoeDamageEvent): number | undefined {
 		let damageTotal = 0
-		for (let step = 0; step < damageEvent.event.targets.length; step++) {
+		for (let step = 0; step < damageEvent.targets.length; step++) {
 			// there is maybe a nicer way to do this with reduce()
 			// console.log(`target ${step} took this much damage: ${damageEvent.targets[step].amount}`)
-			damageTotal =+ damageTotal + damageEvent.event.targets[step].amount
+			damageTotal =+ damageTotal + damageEvent.targets[step].amount
 			// console.log(`adding this instance of damage, new total is ${damageTotal}`)
 		}
 		return damageTotal
 	}
 
 	private getActionId(event: FoeDamageEvent): number | undefined {
-		event = event.event
 		// console.log(`trying to get action id, the event in question is ${JSON.stringify(event)}`)
 		if (event.action != null) {
 			return event.action
