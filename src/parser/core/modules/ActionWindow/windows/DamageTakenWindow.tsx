@@ -9,7 +9,6 @@ import {EventFilterPredicate, EventHook} from '../../../Dispatcher'
 import {filter, noneOf, oneOf} from '../../../filter'
 import {Data} from '../../Data'
 import Suggestions from '../../Suggestions'
-import {EvaluatedAction} from '../EvaluatedAction'
 import {EvaluationOutput, WindowEvaluator} from '../evaluators/WindowEvaluator'
 import {History, HistoryEntry} from '../History'
 
@@ -61,6 +60,7 @@ export abstract class DamageTakenWindow extends Analyser {
 	 * @param evaluator An evaluator to be run on the windows
 	 */
 	protected addEvaluator(evaluator: WindowEvaluator) {
+		console.log(`evaluator added: ${JSON.stringify(evaluator)}`)
 		this.evaluators.push(evaluator)
 	}
 
@@ -143,11 +143,11 @@ export abstract class DamageTakenWindow extends Analyser {
 	private onComplete() {
 		this.onWindowEnd(this.parser.pull.timestamp + this.parser.pull.duration)
 
-		const actionHistory = this.mapHistoryActions()
+		const damageTakenHistory = this.mapDamageTakenHistory()
 
 		this.evaluators
 			.forEach(ev => {
-				const suggestion = ev.suggest(actionHistory)
+				const suggestion = ev.suggest(damageTakenHistory)
 				if (suggestion != null) {
 					this.suggestions.add(suggestion)
 				}
@@ -157,11 +157,15 @@ export abstract class DamageTakenWindow extends Analyser {
 	override output() {
 		if (this.history.entries.length === 0) { return undefined }
 
-		const actionHistory = this.mapHistoryActions()
+		const damageTakenHistory = this.mapDamageTakenHistory()
+
 		const evalColumns: EvaluationOutput[] = []
 		for (const ev of this.evaluators) {
-			const maybeColumns = ev.output(actionHistory)
-			if (maybeColumns == null) { continue }
+			const maybeColumns = ev.output(damageTakenHistory)
+			if (maybeColumns == null) {
+				console.log('no evaluation output')
+				continue
+			}
 			for (const column of ensureArray(maybeColumns)) {
 				evalColumns.push(column)
 			}
@@ -177,14 +181,9 @@ export abstract class DamageTakenWindow extends Analyser {
 				notesMap[colName] = column.rows[idx]
 			})
 
-			console.log(JSON.stringify(window.data))
-
 			return {
 				start: window.start - this.parser.pull.timestamp,
 				end: (window.end ?? window.start) - this.parser.pull.timestamp,
-				// these should be in the evaluator
-				// targets: window.data.map(targets => { return {event: event.targets.length} }),
-				// totalDamage: window.data.map(totalDamage => { return {event: getDamageTotal(event)} }), // ??
 				damageEvents: window.data,
 				notesMap,
 			}
@@ -200,19 +199,15 @@ export abstract class DamageTakenWindow extends Analyser {
 			/></>
 	}
 
-	private mapHistoryActions(): Array<HistoryEntry<EvaluatedAction[]>> {
+	// This does nothing useful for us currently
+	// actionHistory looks this up and maps it to known actions but we dont have those for bosses
+	// Is there other sanity checking to do?
+	private mapDamageTakenHistory(): HistoryEntry[] {
 		return this.history.entries
 			.map(entry => ({
 				start: entry.start,
 				end: entry.end,
-				data: entry.data
-					.map(ev => {
-						const action = this.data.getAction(ev)
-						console.log(`this action is ${action}`)
-						if (action == null) { return undefined }
-						return {...ev, action}
-					})
-					.filter(isDefined),
+				data: entry.data,
 			}))
 	}
 }

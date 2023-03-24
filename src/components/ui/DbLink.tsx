@@ -134,10 +134,13 @@ function Label({
 		)
 
 	const name: ReactNode = undefined
-		?? children
-		?? data?.name
-		?? providedName
-		?? <Trans id="core.dblink.loading">Loading...</Trans>
+        ?? children
+        ?? (data?.name || undefined)
+        ?? providedName
+	// Is there a nicer way to fall back to an empty string?
+	// The below doesn't seem to work.
+        // ?? data?.name
+        // ?? <Trans id="core.dblink.loading">Loading...</Trans>
 
 	return <>
 		{showIcon && icon}

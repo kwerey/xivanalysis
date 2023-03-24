@@ -36,8 +36,6 @@ export default class Rotation extends Component<RotationProps> {
 
 				const action = getDataBy(ACTIONS, 'id', actionId) as TODO
 
-				console.log(`retrieved data about ${actionId}: ${JSON.stringify(action)}`)
-
 				// Don't bother showing the icon for autos
 				if (!action || action.autoAttack) {
 					return

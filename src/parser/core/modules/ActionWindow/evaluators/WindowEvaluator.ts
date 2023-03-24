@@ -12,7 +12,7 @@ interface NotesOutput {
 	format: 'notes'
 	// To be most accurate, this type should be RotationNotes.  However, both types have the
 	// same properties and the consumer works with this type.  Making this be RotationNotes
-	// requires extra discrimnate function calls in the consumer for table format data.
+	// requires extra discriminate function calls in the consumer for table format data.
 	header: RotationTarget
 	rows: JSX.Element[]
 }

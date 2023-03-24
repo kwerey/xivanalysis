@@ -8,7 +8,7 @@ export {calculateExpectedGcdsForTime, ExpectedGcdCountEvaluator} from './evaluat
 export {LimitedActionsEvaluator} from './evaluators/LimitedActionsEvaluator'
 export {PlayersBuffedEvaluator} from './evaluators/PlayersBuffedEvaluator'
 export {NotesEvaluator} from './evaluators/NotesEvaluator'
-export {MitigationEvaluator} from './evaluators/MitigationEvaluator'
+export {DamageTakenEvaluator} from './evaluators/DamageTakenEvaluator'
 export type {TrackedAction, TrackedActionsOptions} from './evaluators/TrackedAction'
 export type {TrackedActionGroup, TrackedActionGroupsOptions} from './evaluators/TrackedActionGroup'
 export type {EvaluationOutput, WindowEvaluator} from './evaluators/WindowEvaluator'

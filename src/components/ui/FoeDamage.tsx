@@ -22,20 +22,25 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 
 	/**
 	 *
-	 * @param damageEvent
-	 * @returns integer representing total damage taken by all targets by an instance of damage
+	 * @param FoeDamageEvent
+	 * @returns integer representing total damage taken by the party by a damage event
 	 */
-	private getDamageTotal(damageEvent: FoeDamageEvent): number | undefined {
+	private getEventDamageTotal(event: FoeDamageEvent): number | undefined {
 		let damageTotal = 0
-		for (let step = 0; step < damageEvent.targets.length; step++) {
+		for (let step = 0; step < event.targets.length; step++) {
 			// there is maybe a nicer way to do this with reduce()
 			// console.log(`target ${step} took this much damage: ${damageEvent.targets[step].amount}`)
-			damageTotal =+ damageTotal + damageEvent.targets[step].amount
+			damageTotal =+ event.targets[step].amount
 			// console.log(`adding this instance of damage, new total is ${damageTotal}`)
 		}
 		return damageTotal
 	}
 
+	/**
+	 *
+	 * @param FoeDamageEvent
+	 * @returns action id according to event.source.action, note that not all event id will be found in XIVApi.
+	 **/
 	private getActionId(event: FoeDamageEvent): number | undefined {
 		// console.log(`trying to get action id, the event in question is ${JSON.stringify(event)}`)
 		if (event.action != null) {
@@ -54,14 +59,9 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 
 		return <div className={styles.container}>
 			{events.map((event, index) => {
-
-				// console.log(`damage instance we are trying to look up: ${JSON.stringify(event)}`)
-
 				const actionId = this.getActionId(event)
 
-				const damageTotal = this.getDamageTotal(event)
-
-				console.log(`actionId for this event is: ${actionId} and damageTotal is ${damageTotal}`)
+				const damageTotal = this.getEventDamageTotal(event)
 
 				const linkClassName = [
 					styles.link,
@@ -80,7 +80,7 @@ export default class FoeDamage extends Component<FoeDamageProps> {
 					key={index}
 					className={cn(...linkClassName)}
 				>
-					<b><ActionLink id={actionId} showIcon={false} /></b> ({damageTotal})
+					<b><ActionLink id={actionId} showIcon={false} /></b> ({damageTotal}) &nbsp;
 				</div>
 			})}
 		</div>

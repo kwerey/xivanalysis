@@ -6,7 +6,7 @@ import {Status} from 'data/STATUSES'
 import {Event, Events} from 'event'
 import {filter, oneOf} from 'parser/core/filter'
 import {dependency} from 'parser/core/Injectable'
-import {MitigationWindow, MitigationEvaluator} from 'parser/core/modules/ActionWindow'
+import {MitigationWindow, DamageTakenEvaluator} from 'parser/core/modules/ActionWindow'
 import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
@@ -33,12 +33,6 @@ export class Kerachole extends MitigationWindow {
 			.type('damage') // capture instances of damage to get total damage dealt
 			.source(oneOf(foeIds))
 
-		const getActorName = (actorId: Actor['id'], actors: Actor[]) =>
-			actors.find(actor => actor.id === actorId)?.name
-			?? actorId
-
-		console.log(`foe ids are ${foeIds}`)
-
 		this.setEventFilter((event): event is Events['damage'] => {
 
 			// Use the filter above to fetch only events by hostile actors
@@ -49,9 +43,7 @@ export class Kerachole extends MitigationWindow {
 		})
 
 		// Change this its all wrong now.
-		this.addEvaluator(new MitigationEvaluator({
-			expectedGcds: 1, // change this
-			globalCooldown: this.globalCooldown, // probably drop this
+		this.addEvaluator(new DamageTakenEvaluator({
 			suggestionIcon: this.data.actions.KERACHOLE.icon,
 			suggestionContent: <Trans id="sge.kerachole.missed.suggestion.content"><DataLink action="KERACHOLE"/> mitigates incoming damage. try to use it in anticipation of significant damage spikes.</Trans>,
 			suggestionWindowName: <DataLink action="KERACHOLE" showIcon={false} />,

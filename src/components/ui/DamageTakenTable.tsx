@@ -40,11 +40,6 @@ export interface DamageTakenTableEntry {
 	 * Enemy action to display that occurs during this entry
 	 */
 	damageEvents: foeDamageEvent[]
-	// /**
-	//  * * Total damage dealt during this entry
-	// */
-   	// totalDamageTaken: number
-
 }
 
 interface DamageTakenTableProps {
