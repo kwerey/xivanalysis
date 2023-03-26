@@ -11,6 +11,7 @@ import {GlobalCooldown} from 'parser/core/modules/GlobalCooldown'
 import {SEVERITY} from 'parser/core/modules/Suggestions'
 import React from 'react'
 import {Actor, Team, Pull} from 'report'
+import {Message} from 'semantic-ui-react'
 import {DISPLAY_ORDER} from './DISPLAY_ORDER'
 
 export class Kerachole extends MitigationWindow {
@@ -19,6 +20,12 @@ export class Kerachole extends MitigationWindow {
 	static override displayOrder = DISPLAY_ORDER.KERACHOLE
 
 	@dependency private globalCooldown!: GlobalCooldown
+
+	override prependMessages = <Message>
+		<Trans id="sge.kerachole.prepend.content">
+			This module shows how much damage the party took while Kerachole was up so that you can judge how much value you got from its damage mitigation effect. Where possible the module provides names for boss attacks. Damage values in brackets are from auto-attacks or bleed ticks. You can drill down more on FFlogs to get more information on the target and type of damage.
+		</Trans>
+	</Message>
 
 	override buffStatus: Status = this.data.statuses.KERACHOLE
 
@@ -42,7 +49,6 @@ export class Kerachole extends MitigationWindow {
 
 		})
 
-		// Change this its all wrong now.
 		this.addEvaluator(new DamageTakenEvaluator({
 			suggestionIcon: this.data.actions.KERACHOLE.icon,
 			suggestionContent: <Trans id="sge.kerachole.missed.suggestion.content"><DataLink action="KERACHOLE"/> mitigates incoming damage. try to use it in anticipation of significant damage spikes.</Trans>,

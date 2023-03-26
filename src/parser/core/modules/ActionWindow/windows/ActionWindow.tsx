@@ -179,16 +179,6 @@ export abstract class ActionWindow extends Analyser {
 						notesMap[colName] = column.rows[idx]
 					}
 				})
-				// can delete this soon but will leave it so its quick to check if display layer works
-				// console.log('window action data is:')
-				// console.log(JSON.stringify(window.data))
-				// console.log(window.data.map(event => { return {action: event.action} }))
-
-				// 	registerEventFormatter('action', ({event, pull}) => <>
-				// 	{getActorName(event.source, pull.actors)}
-				// 	&nbsp;uses <ActionLink id={event.action}/>
-				// 	&nbsp;on {getActorName(event.target, pull.actors)}
-				// </>)
 
 				return {
 					start: window.start - this.parser.pull.timestamp,
@@ -198,8 +188,6 @@ export abstract class ActionWindow extends Analyser {
 					notesMap,
 				}
 			})
-
-		console.log(`rotationData is: ${JSON.stringify(rotationData)}`)
 
 		return <>
 			{this.prependMessages}

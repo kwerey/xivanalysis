@@ -11,13 +11,13 @@ import {Zoe} from './Zoe'
 
 export default [
 	ActionTimeline,
-	// CooldownDowntime,
-	// DoTs,
-	// Gauge,
-	// Interrupts,
-	// Overheal,
-	// Swiftcast,
-	// Tincture,
-	// Zoe,
+	CooldownDowntime,
+	DoTs,
+	Gauge,
+	Interrupts,
+	Overheal,
+	Swiftcast,
+	Tincture,
+	Zoe,
 	Kerachole,
 ]
