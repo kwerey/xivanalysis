@@ -1,8 +1,6 @@
 import {Plural, Trans} from '@lingui/react' // we probably do want plurals some day?
-// import {MitigationTarget, MitigationTargetData} from 'components/ui/DamageTakenTable'
 import React from 'react'
 import {SeverityTiers, TieredSuggestion} from '../../Suggestions/Suggestion'
-// import {EvaluatedAction} from '../EvaluatedAction'
 import {HistoryEntry} from '../History'
 
 // currently we aren't providing targets
@@ -10,11 +8,14 @@ interface TableOutput  {
 	format: 'table'
 }
 
+// Not currently used we're just doing it inline
+// Probably its better to use this so it can be overriden.
 interface NotesOutput {
 	format: 'notes'
 	header: 'Total Damage' // do the translation stuff
 	rows: JSX.Element[]
 }
+
 export type EvaluationOutput = TableOutput | NotesOutput
 
 /**
@@ -27,8 +28,6 @@ export type EvaluationOutput = TableOutput | NotesOutput
  */
 export class DamageTakenEvaluator implements WindowEvaluator {
 
-	// private expectedGcds: number
-	// private globalCooldown: GlobalCooldown
 	private suggestionIcon: string
 	private suggestionContent: JSX.Element
 	private suggestionWindowName: JSX.Element
@@ -44,20 +43,19 @@ export class DamageTakenEvaluator implements WindowEvaluator {
 	// this is purely informational
 	public suggest() { return undefined }
 
-	public output(windows: HistoryEntry[]): EvaluationOutput  {
+	// We're not using EvaluatedAction since that relies on looking them up within XIVA and we need to use the API.
+	public output(windows: HistoryEntry[]): EvaluationOutput | EvaluationOutput[] | undefined {
 		return {
-			format: 'table',
+			format: 'notes',
 			header: {
 				header: <Trans id="core.damage-taken.table.header.total-damage-taken">Total Damage</Trans>,
-				accessor: 'totaldamagetaken',
+				accessor: 'totaldamagetaken', // I don't understand how this accessor is used so prolly this doesn't work as expected
 			},
 			rows: windows.map(window => {
-				return {
-					total: this.countDamageTakenInWindow(window),
-				}
+				return <div>{this.countDamageTakenInWindow(window)}</div>
 			}),
 		}
-	}
+	 }
 
 	/**
 	 *
@@ -80,7 +78,7 @@ export class DamageTakenEvaluator implements WindowEvaluator {
 		for (const event of window.data) {
 			rowDamageTotal =+ rowDamageTotal + this.getEventDamageTotal(event)
 		}
-		console.log(`total damage taken in this window is ${rowDamageTotal}`)
+		// console.log(`total damage taken in this window is ${rowDamageTotal}`)
 		return rowDamageTotal
 	}
 
